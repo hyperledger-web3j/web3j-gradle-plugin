@@ -27,7 +27,7 @@ import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.internal.plugins.PluginApplicationException;
 import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.SourceTask;
@@ -50,7 +50,7 @@ public class Web3jPlugin implements Plugin<Project> {
         registerExtensions(target);
 
         final SourceSetContainer sourceSets =
-                target.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
+                target.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
 
         target.afterEvaluate(p -> sourceSets.all(sourceSet -> configure(target, sourceSet)));
     }
@@ -98,9 +98,7 @@ public class Web3jPlugin implements Plugin<Project> {
         sourceSet.getJava().srcDir(outputDir);
 
         final String srcSetName =
-                sourceSet.getName().equals("main")
-                        ? ""
-                        : capitalize((CharSequence) sourceSet.getName());
+                sourceSet.getName().equals("main") ? "" : capitalize(sourceSet.getName());
 
         final String generateTaskName = "generate" + srcSetName + "ContractWrappers";
 
@@ -154,7 +152,7 @@ public class Web3jPlugin implements Plugin<Project> {
     protected SourceDirectorySet buildSourceDirectorySet(
             Project project, final SourceSet sourceSet) {
 
-        final String displayName = capitalize((CharSequence) sourceSet.getName()) + " Solidity BIN";
+        final String displayName = capitalize(sourceSet.getName()) + " Solidity BIN";
 
         final SourceDirectorySet directorySet =
                 project.getObjects().sourceDirectorySet(sourceSet.getName(), displayName);

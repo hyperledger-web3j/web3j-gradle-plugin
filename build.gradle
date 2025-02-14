@@ -6,11 +6,14 @@ plugins {
     id 'jacoco'
     id 'com.diffplug.spotless' version '6.25.0'
     id 'com.gradle.plugin-publish' version '1.2.1'
-    id 'de.undercouch.download' version '4.1.2'
+    id 'de.undercouch.download' version '5.6.0'
 }
 
 description = 'Gradle plugin providing tasks to generate Web3j contracts from Solidity.'
-sourceCompatibility = 17
+
+java {
+    sourceCompatibility = 17
+}
 
 ext {
     web3jVersion = version
@@ -25,7 +28,7 @@ apply {
         'spotless',
         'junit'
     ].each { buildScript ->
-        download {
+        download.run {
             src "https://raw.githubusercontent.com/hyperledger-web3j/web3j-build-tools/main/gradle/$buildScript/build.gradle"
             dest "$rootDir/gradle/$buildScript/build.gradle"
             overwrite true
@@ -89,7 +92,7 @@ sourceSets {
     }
 }
 
-task generateVersionProperties {
+tasks.register("generateVersionProperties") {
     doLast {
         new File(generatedResources).mkdirs()
         def generated = new File(generatedResources, "version.properties")
@@ -97,8 +100,8 @@ task generateVersionProperties {
     }
 }
 
-tasks.withType(Test) {
-    reports.html.destination file("${reporting.baseDir}/${name}")
+test {
+    reports.html.outputLocation = file("${reporting.baseDir}/${name}")
 }
 
 tasks.named('spotlessKotlin') {
@@ -111,4 +114,8 @@ tasks.named('spotlessJava') {
     dependsOn tasks.named('compileTestJava')
     dependsOn tasks.named('javadoc')
     dependsOn tasks.named('test')
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.addStringOption('Xdoclint:-missing', '-quiet')
 }

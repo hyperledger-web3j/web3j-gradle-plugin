@@ -7,7 +7,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-*
+* Fix Gradle deprecation warnings [#96](https://github.com/hyperledger-web3j/web3j-gradle-plugin/pull/96)
 
 ### Features
 
